@@ -5,7 +5,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
+
+import de.doccrazy.shared.game.world.BodyBuilder;
 import de.doccrazy.shared.game.world.Box2dWorld;
 
 public abstract class ShapeActor extends Box2dActor {
@@ -14,31 +18,17 @@ public abstract class ShapeActor extends Box2dActor {
     public ShapeActor(Box2dWorld world, Vector2 spawn, boolean spawnIsLeftBottom) {
         super(world);
 
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.x = spawn.x;
-        bodyDef.position.y = spawn.y;
-        bodyDef.linearDamping = 0.1f;
-        bodyDef.angularDamping = 0.8f;
-
-        customizeBody(bodyDef);
-
-        this.body = world.box2dWorld.createBody(bodyDef);
+        BodyBuilder builder = createBody(spawn);
+        this.body = builder.build(world);
         this.body.setUserData(this);
 
-        FixtureDef fixDef = new FixtureDef();
-        fixDef.friction = 3f;
-        fixDef.restitution = 0.1f;
-        fixDef.density = 1;
-
-        createFixture(body, fixDef);
-
+        Shape shape = body.getFixtureList().get(0).getShape();
         //determine origin / size
-        if (fixDef.shape instanceof CircleShape) {
-            setOrigin(fixDef.shape.getRadius(), fixDef.shape.getRadius());
-            setSize(fixDef.shape.getRadius() * 2f, fixDef.shape.getRadius() * 2f);
-        } else if (fixDef.shape instanceof PolygonShape) {
-            PolygonShape poly = (PolygonShape) fixDef.shape;
+        if (shape instanceof CircleShape) {
+            setOrigin(shape.getRadius(), shape.getRadius());
+            setSize(shape.getRadius() * 2f, shape.getRadius() * 2f);
+        } else if (shape instanceof PolygonShape) {
+            PolygonShape poly = (PolygonShape) shape;
             Rectangle bb = null;
             Vector2 vert = new Vector2();
             for (int i = 0; i < poly.getVertexCount(); i++) {
@@ -58,16 +48,13 @@ public abstract class ShapeActor extends Box2dActor {
         if (spawnIsLeftBottom) {
             body.setTransform(spawn.x + getOriginX(), spawn.y + getOriginY(), 0);
         }
-
-        fixDef.shape.dispose();
     }
 
-    protected abstract void customizeBody(BodyDef bodyDef);
-
     /**
-     * Attach a shape to the FixtureDef, then call body.createFixture(fixDef)
+     * You should create a body with a single fixture. The fixture will be used to determine
+     * the Actor's origin and size.
      */
-    protected abstract void createFixture(Body body, FixtureDef fixtureDef);
+    protected abstract BodyBuilder createBody(Vector2 spawn);
 
     /**
      * If set to false, the shape's rotation from Box2d will not be mapped to the actor
