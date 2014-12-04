@@ -120,10 +120,11 @@ public class Tasker {
                 if (follow instanceof OnceTaskDef) {
                     continuousFunc = ((OnceTaskDef)follow).continuousFunc;
                     follow = ((OnceTaskDef)follow).follow;
+                    noDone = false;
                 } else {
                     continuousFunc = null;
                     follow = null;
-                    noDone = true;
+                    noDone = true;   //followup is a regular task, do not stop after first exec()
                 }
             }
         }
