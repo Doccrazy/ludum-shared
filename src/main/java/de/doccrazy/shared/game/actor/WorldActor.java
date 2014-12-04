@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+
 import de.doccrazy.shared.game.world.Box2dWorld;
 
 /**
@@ -14,6 +15,7 @@ public abstract class WorldActor extends Actor {
     protected Box2dWorld world;
     protected boolean dead;
     protected float stateTime = 0f;
+    protected Tasker task = new Tasker();
 
     private final Affine2 worldTransform = new Affine2();
     private final Matrix4 computedTransform = new Matrix4();
@@ -32,6 +34,7 @@ public abstract class WorldActor extends Actor {
         super.act(delta);
         stateTime += delta;
 
+        task.update(delta);
         doAct(delta);
     }
 
