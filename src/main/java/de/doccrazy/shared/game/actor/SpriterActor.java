@@ -6,12 +6,13 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.brashmonkey.spriter.Entity;
 import com.brashmonkey.spriter.Player;
+import com.brashmonkey.spriter.PlayerTweener;
 
 import de.doccrazy.shared.game.world.Box2dWorld;
 import de.doccrazy.shared.spriter.GdxDrawer;
 
 public abstract class SpriterActor extends ShapeActor {
-    protected final Player player;
+    protected Player player;
     private final Supplier<GdxDrawer> drawerProvider;
 
     public SpriterActor(Box2dWorld world, Vector2 spawn, boolean spawnIsLeftBottom, Entity entity, Supplier<GdxDrawer> drawerProvider) {
@@ -26,6 +27,10 @@ public abstract class SpriterActor extends ShapeActor {
     protected void doAct(float delta) {
         super.doAct(delta);
         player.speed = (int) (delta * 1000);
+        if (player instanceof PlayerTweener) {
+        	((PlayerTweener) player).getFirstPlayer().speed = player.speed;
+        	((PlayerTweener) player).getSecondPlayer().speed = player.speed;
+        }
         player.update();
     }
 

@@ -33,6 +33,10 @@ public class ResourcesBaseSpriter {
     }
 
     protected Entity entity(String name) {
-        return data.getEntity(name);
+        Entity entity = data.getEntity(name);
+        if (entity == null) {
+        	throw new RuntimeException("Entity " + name + " not found!");
+        }
+        return entity;
     }
 }

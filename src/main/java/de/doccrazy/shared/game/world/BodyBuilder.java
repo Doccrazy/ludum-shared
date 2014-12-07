@@ -26,8 +26,15 @@ public class BodyBuilder {
      ******************************************************************* */
 
     public static BodyBuilder forDynamic(Vector2 position) {
+    	BodyBuilder builder = new BodyBuilder(position);
+    	builder.bodyDef.type = BodyDef.BodyType.DynamicBody;
+    	builder.newFixture();
+    	return builder;
+    }
+
+    public static BodyBuilder forKinematic(Vector2 position) {
         BodyBuilder builder = new BodyBuilder(position);
-        builder.bodyDef.type = BodyDef.BodyType.DynamicBody;
+        builder.bodyDef.type = BodyDef.BodyType.KinematicBody;
         builder.newFixture();
         return builder;
     }
@@ -86,6 +93,11 @@ public class BodyBuilder {
         return this;
     }
 
+    public BodyBuilder zeroGrav() {
+    	bodyDef.gravityScale = 0;
+    	return this;
+    }
+
     /* *******************************************************************
      * Fixture definition and attributes
      ******************************************************************* */
@@ -129,6 +141,12 @@ public class BodyBuilder {
     public BodyBuilder fixSensor() {
         fixtures.get(fixtures.size()-1).fixtureDef.isSensor = true;
         return this;
+    }
+
+    public BodyBuilder fixFilter(short categoryBits, short maskBits) {
+    	fixtures.get(fixtures.size()-1).fixtureDef.filter.categoryBits = categoryBits;
+    	fixtures.get(fixtures.size()-1).fixtureDef.filter.maskBits = maskBits;
+    	return this;
     }
 
     /* *******************************************************************

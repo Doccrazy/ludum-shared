@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import de.doccrazy.shared.game.world.Box2dWorld;
 
@@ -23,6 +24,17 @@ public abstract class WorldActor extends Actor {
 
     public WorldActor(Box2dWorld world) {
         this.world = world;
+    }
+
+    @Override
+    protected void setStage(Stage stage) {
+    	super.setStage(stage);
+    	if (stage != null) {
+    		init();
+    	}
+    }
+
+    protected void init() {
     }
 
     @Override
