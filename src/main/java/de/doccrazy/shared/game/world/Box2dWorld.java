@@ -1,17 +1,19 @@
 package de.doccrazy.shared.game.world;
 
+import java.util.Arrays;
+import java.util.List;
+
 import box2dLight.RayHandler;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+
 import de.doccrazy.shared.game.actor.WorldActor;
 import de.doccrazy.shared.game.base.ActorContactListener;
 import de.doccrazy.shared.game.base.ActorListener;
 import de.doccrazy.shared.game.event.EventSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 public abstract class Box2dWorld extends EventSource {
     private static final float PHYSICS_STEP = 1f/300f;
@@ -25,7 +27,7 @@ public abstract class Box2dWorld extends EventSource {
 
     private int score;
 
-    private GameState gameState = GameState.INIT;
+    private GameState gameState = null;
     private float stateTime;
 
     public Box2dWorld(Vector2 gravity) {
@@ -38,9 +40,15 @@ public abstract class Box2dWorld extends EventSource {
     }
 
     public final void transition(GameState newState) {
+    	if (gameState == newState) {
+    		return;
+    	}
         if (newState == GameState.INIT) {
             List<Actor> actors = Arrays.asList(stage.getActors().toArray());
             for (Actor actor : actors) {
+            	if (actor instanceof WorldActor && ((WorldActor)actor).isNoRemove()) {
+            		continue;
+            	}
                 actor.remove();
             }
         }

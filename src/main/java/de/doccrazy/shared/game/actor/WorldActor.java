@@ -111,4 +111,12 @@ public abstract class WorldActor extends Actor {
     protected void resetTransform(Batch batch) {
         batch.setTransformMatrix(oldTransform);
     }
+
+    public Box2dWorld getWorld() {
+		return world;
+	}
+
+	public boolean isNoRemove() {
+		return false;
+	}
 }

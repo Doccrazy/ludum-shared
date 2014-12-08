@@ -26,15 +26,27 @@ public abstract class SpriterActor extends ShapeActor {
     @Override
     protected void doAct(float delta) {
         super.doAct(delta);
-        player.speed = (int) (delta * 1000);
-        if (player instanceof PlayerTweener) {
-        	((PlayerTweener) player).getFirstPlayer().speed = player.speed;
-        	((PlayerTweener) player).getSecondPlayer().speed = player.speed;
-        }
+        setSpeed(player, (int) (delta * 1000));
         player.update();
     }
 
-    @Override
+    private void setSpeed(Player player2, int speed) {
+    	player2.speed = speed;
+        if (player2 instanceof PlayerTweener) {
+        	setSpeed(((PlayerTweener) player2).getFirstPlayer(), speed);
+        	setSpeed(((PlayerTweener) player2).getSecondPlayer(), speed);
+        }
+	}
+
+    protected void scalePlayer(Player player2, float scale) {
+    	player2.setScale(scale);
+        if (player2 instanceof PlayerTweener) {
+        	scalePlayer(((PlayerTweener) player2).getFirstPlayer(), scale);
+        	scalePlayer(((PlayerTweener) player2).getSecondPlayer(), scale);
+        }
+    }
+
+	@Override
     public void draw(Batch batch, float parentAlpha) {
         updatePosition();
         applyClientTransform(batch, true);

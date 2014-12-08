@@ -12,12 +12,12 @@ public class EventSource {
         eventQueue.add(event);
     }
 
-    public void pollEvents(Class<? extends Event> type, Consumer<? super Event> consumer) {
+    public <T extends Event> void pollEvents(Class<T> type, Consumer<? super T> consumer) {
         eventQueue.removeIf(new Predicate<Event>() {
             @Override
             public boolean test(Event event) {
                 if (type.isInstance(event)) {
-                    consumer.accept(event);
+                    consumer.accept((T)event);
                     return true;
                 }
                 return false;

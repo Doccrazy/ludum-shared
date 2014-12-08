@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
@@ -45,6 +47,13 @@ public abstract class ResourcesBase {
         pixmap.fill();
         Texture tex = new Texture(pixmap);
         return new Sprite(tex);
+    }
+
+    protected ParticleEffectPool particle(String filename, float scale) {
+    	ParticleEffect effect = new ParticleEffect();
+    	effect.load(Gdx.files.internal(filename), atlas);
+    	effect.scaleEffect(scale);
+    	return new ParticleEffectPool(effect, 10, 100);
     }
 
     public TextureAtlas getAtlas() {

@@ -156,7 +156,7 @@ public class Tasker {
          * After this finishes, run action continously during x seconds, passing the elapsed time
          */
         public OnceTaskDef thenDuring(float secs, Consumer<Float> action) {
-            follow = new TaskDef(secs, null);
+            follow = new OnceTaskDef(secs, null);
             ((OnceTaskDef)follow).continuousFunc = action;
             return (OnceTaskDef)follow;
         }

@@ -149,6 +149,11 @@ public class BodyBuilder {
     	return this;
     }
 
+    public BodyBuilder fixGroup(short groupIndex) {
+    	fixtures.get(fixtures.size()-1).fixtureDef.filter.groupIndex = groupIndex;
+    	return this;
+    }
+
     /* *******************************************************************
      * Builder method
      ******************************************************************* */
