@@ -68,6 +68,15 @@ public class GamepadMovementListener extends ControllerAdapter implements Moveme
     	return true;
     }
 
+    @Override
+    public boolean axisMoved(Controller controller, int axisIndex, float value) {
+    	if (axisIndex == 1 || axisIndex == 3) {
+    		move.x = Math.abs(value) > 0.2 ? value : 0;
+    		return true;
+    	}
+    	return false;
+    }
+
 	@Override
 	public Vector2 getMovement() {
 		return move;
