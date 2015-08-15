@@ -1,6 +1,7 @@
 package de.doccrazy.shared.game.world;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import box2dLight.RayHandler;
@@ -90,9 +91,22 @@ public abstract class Box2dWorld extends EventSource {
 
     public void addActor(WorldActor actor) {
         stage.addActor(actor);
+        refreshZOrder();
         if (actorListener != null) {
             actorListener.actorAdded(actor);
         }
+    }
+
+    public void refreshZOrder() {
+        stage.getActors().sort(new Comparator<Actor>() {
+            @Override
+            public int compare(Actor o1, Actor o2) {
+                if (!(o1 instanceof WorldActor) || !(o2 instanceof WorldActor)) {
+                    return 0;
+                }
+                return ((WorldActor)o1).getzOrder() - ((WorldActor)o2).getzOrder();
+            }
+        });
     }
 
     public void onActorRemoved(WorldActor actor) {

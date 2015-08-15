@@ -9,14 +9,14 @@ import java.util.function.Consumer;
  * Simple task runner with functional interface; supports task chaining
  */
 public class Tasker {
-    private List<TaskDef> tasks = new ArrayList<>();
+    private List<TaskDef> tasks = new ArrayList<>(), newTasks = new ArrayList<>();
 
     /**
      * Run action every x seconds
      */
     public TaskDef every(float secs, Consumer<Void> action) {
         TaskDef def = new TaskDef(secs, action);
-        tasks.add(def);
+        newTasks.add(def);
         return def;
     }
 
@@ -25,7 +25,7 @@ public class Tasker {
      */
     public OnceTaskDef in(float secs, Consumer<Void> action) {
         OnceTaskDef def = new OnceTaskDef(secs, action);
-        tasks.add(def);
+        newTasks.add(def);
         return def;
     }
 
@@ -35,7 +35,7 @@ public class Tasker {
     public OnceTaskDef during(float secs, Consumer<Float> action) {
         OnceTaskDef def = new OnceTaskDef(secs, null);
         def.continuousFunc = action;
-        tasks.add(def);
+        newTasks.add(def);
         return def;
     }
 
@@ -46,7 +46,9 @@ public class Tasker {
         return in(secs, Void -> {});
     }
 
-    void update(float delta) {
+    public void update(float delta) {
+        tasks.addAll(newTasks);
+        newTasks.clear();
         for (TaskDef task : tasks) {
             task.update(delta);
         }

@@ -17,6 +17,7 @@ public abstract class WorldActor extends Actor {
     protected boolean dead;
     protected float stateTime = 0f;
     protected Tasker task = new Tasker();
+    private int zOrder = 0;
 
     private final Affine2 worldTransform = new Affine2();
     private final Matrix4 computedTransform = new Matrix4();
@@ -119,4 +120,15 @@ public abstract class WorldActor extends Actor {
 	public boolean isNoRemove() {
 		return false;
 	}
+
+	public int getzOrder() {
+        return zOrder;
+    }
+
+	public void setzOrder(int zOrder) {
+        this.zOrder = zOrder;
+        if (getStage() == world.stage) {
+            world.refreshZOrder();
+        }
+    }
 }

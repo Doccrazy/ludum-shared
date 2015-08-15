@@ -6,11 +6,14 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 
 public abstract class ResourcesBase {
     protected final TextureAtlas atlas;
@@ -20,7 +23,32 @@ public abstract class ResourcesBase {
     }
 
     public ResourcesBase(String atlasFile) {
-        atlas = new TextureAtlas(Gdx.files.internal(atlasFile));
+        atlas = new TextureAtlas(Gdx.files.internal(atlasFile)) {
+            @Override
+            public Sprite createSprite(String name) {
+                Sprite result = super.createSprite(name);
+                if (result == null) {
+                    throw new IllegalArgumentException("Sprite " + name + " not found");
+                }
+                return result;
+            }
+            @Override
+            public Sprite createSprite(String name, int index) {
+                Sprite result = super.createSprite(name, index);
+                if (result == null) {
+                    throw new IllegalArgumentException("Sprite " + name + " not found at " + index);
+                }
+                return result;
+            }
+            @Override
+            public Array<AtlasRegion> findRegions(String name) {
+                Array<AtlasRegion> result = super.findRegions(name);
+                if (result.size == 0) {
+                    throw new IllegalArgumentException("Regions " + name + " not found");
+                }
+                return result;
+            }
+        };
     }
 
     protected Texture texture(String filename) {
@@ -54,6 +82,17 @@ public abstract class ResourcesBase {
     	effect.load(Gdx.files.internal(filename), atlas);
     	effect.scaleEffect(scale);
     	return new ParticleEffectPool(effect, 10, 100);
+    }
+
+    protected Animation flip(Animation anim, boolean flipX, boolean flipY) {
+        TextureRegion[] framesFlipped = new TextureRegion[anim.getKeyFrames().length];
+        for (int i = 0; i < anim.getKeyFrames().length; i++) {
+            framesFlipped[i] = new TextureRegion(anim.getKeyFrames()[i]);
+            framesFlipped[i].flip(flipX, flipY);
+        }
+        Animation result = new Animation(anim.getFrameDuration(), framesFlipped);
+        result.setPlayMode(anim.getPlayMode());
+        return result;
     }
 
     public TextureAtlas getAtlas() {
