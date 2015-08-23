@@ -11,11 +11,11 @@ import com.brashmonkey.spriter.PlayerTweener;
 import de.doccrazy.shared.game.world.Box2dWorld;
 import de.doccrazy.shared.spriter.GdxDrawer;
 
-public abstract class SpriterActor extends ShapeActor {
+public abstract class SpriterActor<T extends Box2dWorld> extends ShapeActor<T> {
     protected Player player;
     private final Supplier<GdxDrawer> drawerProvider;
 
-    public SpriterActor(Box2dWorld world, Vector2 spawn, boolean spawnIsLeftBottom, Entity entity, Supplier<GdxDrawer> drawerProvider) {
+    public SpriterActor(T world, Vector2 spawn, boolean spawnIsLeftBottom, Entity entity, Supplier<GdxDrawer> drawerProvider) {
         super(world, spawn, spawnIsLeftBottom);
         this.drawerProvider = drawerProvider;
         player = new Player(entity);

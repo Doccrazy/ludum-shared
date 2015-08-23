@@ -12,8 +12,8 @@ import de.doccrazy.shared.game.world.Box2dWorld;
 /**
  * Base class for actors contained in the game world
  */
-public abstract class WorldActor extends Actor {
-    protected Box2dWorld world;
+public abstract class WorldActor<T extends Box2dWorld> extends Actor {
+    protected T world;
     protected boolean dead;
     protected float stateTime = 0f;
     protected Tasker task = new Tasker();
@@ -23,7 +23,7 @@ public abstract class WorldActor extends Actor {
     private final Matrix4 computedTransform = new Matrix4();
     private final Matrix4 oldTransform = new Matrix4();
 
-    public WorldActor(Box2dWorld world) {
+    public WorldActor(T world) {
         this.world = world;
     }
 
@@ -113,7 +113,7 @@ public abstract class WorldActor extends Actor {
         batch.setTransformMatrix(oldTransform);
     }
 
-    public Box2dWorld getWorld() {
+    public T getWorld() {
 		return world;
 	}
 

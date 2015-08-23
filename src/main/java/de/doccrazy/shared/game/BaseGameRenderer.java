@@ -11,19 +11,19 @@ import de.doccrazy.shared.game.actor.WorldActor;
 import de.doccrazy.shared.game.base.ActorListener;
 import de.doccrazy.shared.game.world.Box2dWorld;
 
-public abstract class BaseGameRenderer implements ActorListener {
+public abstract class BaseGameRenderer<T extends Box2dWorld<T>> implements ActorListener<T> {
 	private static final float CAM_PPS = 5f;
 
     private SpriteBatch batch = new SpriteBatch();
     private Box2DDebugRenderer renderer;
 
-    protected Box2dWorld world;
+    protected T world;
     protected Vector2 gameViewport;
     protected OrthographicCamera camera;
     protected float zoom = 1;   //camera zoom
     protected boolean renderBox2dDebug;
 
-    public BaseGameRenderer(Box2dWorld world, Vector2 gameViewport) {
+    public BaseGameRenderer(T world, Vector2 gameViewport) {
         this.world = world;
         this.gameViewport = gameViewport;
 
@@ -71,7 +71,7 @@ public abstract class BaseGameRenderer implements ActorListener {
             renderer.render(world.box2dWorld, camera.combined);
         }
 
-        world.rayHandler.setCombinedMatrix(camera.combined);
+        world.rayHandler.setCombinedMatrix(camera.combined, 0, 0, gameViewport.x, gameViewport.y);
         world.rayHandler.updateAndRender();
     }
 
@@ -81,11 +81,11 @@ public abstract class BaseGameRenderer implements ActorListener {
 	protected abstract void beforeRender();
 
 	@Override
-	public void actorAdded(WorldActor actor) {
+	public void actorAdded(WorldActor<T> actor) {
 	}
 
 	@Override
-	public void actorRemoved(WorldActor actor) {
+	public void actorRemoved(WorldActor<T> actor) {
 	}
 
 	public boolean isRenderBox2dDebug() {

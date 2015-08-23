@@ -7,10 +7,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+
 import de.doccrazy.shared.core.Debug;
 import de.doccrazy.shared.game.world.Box2dWorld;
 
-public abstract class BaseGameScreen<W extends Box2dWorld, R extends BaseGameRenderer> implements Screen {
+public abstract class BaseGameScreen<W extends Box2dWorld<W>, R extends BaseGameRenderer> implements Screen {
     private W world; // contains the game world's bodies and actors.
     private R renderer; // our custom game renderer.
     private Stage uiStage; // stage that holds the GUI. Pixel-exact size.
@@ -32,7 +33,7 @@ public abstract class BaseGameScreen<W extends Box2dWorld, R extends BaseGameRen
 
 	protected abstract W createWorld();
 
-	protected abstract R createRenderer(Box2dWorld world);
+	protected abstract R createRenderer(W world);
 
 	protected abstract void createUI(Stage uiStage, W world, R renderer);
 

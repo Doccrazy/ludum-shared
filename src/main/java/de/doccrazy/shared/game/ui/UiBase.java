@@ -3,10 +3,11 @@ package de.doccrazy.shared.game.ui;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+
 import de.doccrazy.shared.game.BaseGameRenderer;
 import de.doccrazy.shared.game.world.Box2dWorld;
 
-public abstract class UiBase<W extends Box2dWorld, R extends BaseGameRenderer, I extends InputListener> extends Table {
+public abstract class UiBase<W extends Box2dWorld<W>, R extends BaseGameRenderer<W>, I extends InputListener> extends Table {
     private W world;
     private R renderer;
     private I input;

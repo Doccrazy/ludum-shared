@@ -12,12 +12,12 @@ import com.badlogic.gdx.physics.box2d.Shape;
 import de.doccrazy.shared.game.world.BodyBuilder;
 import de.doccrazy.shared.game.world.Box2dWorld;
 
-public abstract class ShapeActor extends Box2dActor {
+public abstract class ShapeActor<T extends Box2dWorld> extends Box2dActor<T> {
     private boolean useRotation = true;
 	protected Vector2 spawn;
 	private boolean spawnIsLeftBottom;
 
-    public ShapeActor(Box2dWorld world, Vector2 spawn, boolean spawnIsLeftBottom) {
+    public ShapeActor(T world, Vector2 spawn, boolean spawnIsLeftBottom) {
         super(world);
 		this.spawn = spawn;
 		this.spawnIsLeftBottom = spawnIsLeftBottom;

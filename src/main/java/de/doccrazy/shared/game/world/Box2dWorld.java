@@ -20,7 +20,7 @@ import de.doccrazy.shared.game.base.ActorContactListener;
 import de.doccrazy.shared.game.base.ActorListener;
 import de.doccrazy.shared.game.event.EventSource;
 
-public abstract class Box2dWorld extends EventSource {
+public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
     private static final float PHYSICS_STEP = 1f/300f;
 
     public final World box2dWorld; // box2d world
@@ -28,7 +28,7 @@ public abstract class Box2dWorld extends EventSource {
     public final Stage stage; // stage containing game actors (not GUI, but actual game elements)
 
     private float deltaCache;
-    private ActorListener actorListener;
+    private ActorListener<T> actorListener;
 
     private int score;
 
@@ -51,7 +51,7 @@ public abstract class Box2dWorld extends EventSource {
         if (newState == GameState.INIT) {
             List<Actor> actors = Arrays.asList(stage.getActors().toArray());
             for (Actor actor : actors) {
-            	if (actor instanceof WorldActor && ((WorldActor)actor).isNoRemove()) {
+            	if (actor instanceof WorldActor && ((WorldActor<?>)actor).isNoRemove()) {
             		continue;
             	}
                 actor.remove();
@@ -89,11 +89,11 @@ public abstract class Box2dWorld extends EventSource {
 
     protected abstract void doUpdate(float delta);
 
-    public void setActorListener(ActorListener actorListener) {
+    public void setActorListener(ActorListener<T> actorListener) {
         this.actorListener = actorListener;
     }
 
-    public void addActor(WorldActor actor) {
+    public void addActor(WorldActor<T> actor) {
         stage.addActor(actor);
         refreshZOrder();
         if (actorListener != null) {
@@ -108,12 +108,12 @@ public abstract class Box2dWorld extends EventSource {
                 if (!(o1 instanceof WorldActor) || !(o2 instanceof WorldActor)) {
                     return 0;
                 }
-                return ((WorldActor)o1).getzOrder() - ((WorldActor)o2).getzOrder();
+                return ((WorldActor<?>)o1).getzOrder() - ((WorldActor<?>)o2).getzOrder();
             }
         });
     }
 
-    public void onActorRemoved(WorldActor actor) {
+    public void onActorRemoved(WorldActor<T> actor) {
         if (actorListener != null) {
             actorListener.actorRemoved(actor);
         }

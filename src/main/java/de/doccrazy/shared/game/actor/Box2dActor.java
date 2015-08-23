@@ -1,17 +1,18 @@
 package de.doccrazy.shared.game.actor;
 
-import box2dLight.Light;
-import com.badlogic.gdx.physics.box2d.Body;
-import de.doccrazy.shared.game.world.Box2dWorld;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Box2dActor extends WorldActor {
+import com.badlogic.gdx.physics.box2d.Body;
+
+import box2dLight.Light;
+import de.doccrazy.shared.game.world.Box2dWorld;
+
+public abstract class Box2dActor<T extends Box2dWorld> extends WorldActor<T> {
 	protected Body body;
 	protected List<Light> lights = new ArrayList<>();
 
-	public Box2dActor(Box2dWorld world) {
+	public Box2dActor(T world) {
 		super(world);
 	}
 
