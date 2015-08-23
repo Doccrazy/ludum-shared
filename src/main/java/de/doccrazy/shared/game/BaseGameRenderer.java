@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import de.doccrazy.shared.core.Debug;
+
 import de.doccrazy.shared.game.actor.WorldActor;
 import de.doccrazy.shared.game.base.ActorListener;
 import de.doccrazy.shared.game.world.Box2dWorld;
@@ -21,6 +21,7 @@ public abstract class BaseGameRenderer implements ActorListener {
     protected Vector2 gameViewport;
     protected OrthographicCamera camera;
     protected float zoom = 1;   //camera zoom
+    protected boolean renderBox2dDebug;
 
     public BaseGameRenderer(Box2dWorld world, Vector2 gameViewport) {
         this.world = world;
@@ -66,7 +67,7 @@ public abstract class BaseGameRenderer implements ActorListener {
         world.stage.draw();
 
         // box2d debug renderering (optional)
-        if (Debug.ON) {
+        if (renderBox2dDebug) {
             renderer.render(world.box2dWorld, camera.combined);
         }
 
@@ -86,5 +87,13 @@ public abstract class BaseGameRenderer implements ActorListener {
 	@Override
 	public void actorRemoved(WorldActor actor) {
 	}
+
+	public boolean isRenderBox2dDebug() {
+        return renderBox2dDebug;
+    }
+
+	public void setRenderBox2dDebug(boolean renderBox2dDebug) {
+        this.renderBox2dDebug = renderBox2dDebug;
+    }
 
 }

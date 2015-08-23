@@ -106,6 +106,11 @@ public class BodyBuilder {
         return this;
     }
 
+    public BodyBuilder noSleep() {
+        bodyDef.allowSleep = false;
+        return this;
+    }
+
     public BodyBuilder userData(Object userData) {
         this.userData = userData;
         return this;

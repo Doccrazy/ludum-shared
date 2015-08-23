@@ -78,7 +78,7 @@ public abstract class Box2dWorld extends EventSource {
 
         while (deltaCache >= PHYSICS_STEP) {
             stage.act(PHYSICS_STEP); // update game stage
-            box2dWorld.step(PHYSICS_STEP, 8, 3); // update box2d world
+            box2dWorld.step(PHYSICS_STEP, 6, 3); // update box2d world
             deltaCache -= PHYSICS_STEP;
         }
 
@@ -178,7 +178,7 @@ class ClosestBodyQueryCallback implements QueryCallback {
 
     @Override
     public boolean reportFixture(Fixture fixture) {
-        if (!fixture.getBody().equals(exclude) &&
+        if (!fixture.getBody().equals(exclude) && !(fixture.getFilterData().maskBits == 0) &&
                 (body == null || fixture.getBody().getPosition().dst(pos) < body.getPosition().dst(pos))) {
             body = fixture.getBody();
         }
