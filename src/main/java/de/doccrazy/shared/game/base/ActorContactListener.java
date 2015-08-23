@@ -20,15 +20,16 @@ public class ActorContactListener implements ContactListener {
 		Body b = contact.getFixtureB().getBody();
 
 		Vector2 normal = contact.getWorldManifold().getNormal();
+		int numContacts = contact.getWorldManifold().getNumberOfContactPoints();
 		Vector2 contactPoint = contact.getWorldManifold().getPoints()[0];
 		if (a.getUserData() instanceof CollisionListener) {
-			boolean enable = ((CollisionListener)a.getUserData()).beginContact(a, b, normal, contactPoint);
+			boolean enable = ((CollisionListener)a.getUserData()).beginContact(a, b, normal, numContacts > 0 ? contactPoint : null);
 			if (!enable) {
 				contact.setEnabled(false);
 			}
 		}
 		if (b.getUserData() instanceof CollisionListener) {
-			boolean enable = ((CollisionListener)b.getUserData()).beginContact(b, a, normal, contactPoint);
+			boolean enable = ((CollisionListener)b.getUserData()).beginContact(b, a, normal, numContacts > 0 ? contactPoint : null);
 			if (!enable) {
 				contact.setEnabled(false);
 			}

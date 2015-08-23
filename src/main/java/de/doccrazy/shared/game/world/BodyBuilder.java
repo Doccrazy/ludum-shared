@@ -9,10 +9,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Shape;
 
 public class BodyBuilder {
     private final BodyDef bodyDef = new BodyDef();
     private final List<FixtureTemplate> fixtures = new ArrayList<>();
+    private Object userData;
 
     private BodyBuilder(Vector2 position) {
         bodyDef.position.set(position);
@@ -93,9 +95,20 @@ public class BodyBuilder {
         return this;
     }
 
-    public BodyBuilder zeroGrav() {
-    	bodyDef.gravityScale = 0;
+    /** Scale the gravity applied to this body. **/
+    public BodyBuilder gravityScale(float scale) {
+    	bodyDef.gravityScale = scale;
     	return this;
+    }
+
+    public BodyBuilder zeroGrav() {
+        bodyDef.gravityScale = 0;
+        return this;
+    }
+
+    public BodyBuilder userData(Object userData) {
+        this.userData = userData;
+        return this;
     }
 
     /* *******************************************************************
@@ -122,9 +135,13 @@ public class BodyBuilder {
         return this;
     }
 
-    public BodyBuilder fixShape(ShapeBuilder shape) {
-        fixtures.get(fixtures.size()-1).fixtureDef.shape = shape.build();
+    public BodyBuilder fixShape(Shape shape) {
+        fixtures.get(fixtures.size()-1).fixtureDef.shape = shape;
         return this;
+    }
+
+    public BodyBuilder fixShape(ShapeBuilder shape) {
+        return fixShape(shape.build());
     }
 
     /**
@@ -160,6 +177,8 @@ public class BodyBuilder {
 
     public Body build(Box2dWorld world) {
         Body body = world.box2dWorld.createBody(bodyDef);
+        body.setUserData(userData);
+        userData = null;
         for (FixtureTemplate f : fixtures) {
             f.attachFixtureFunc.accept(body, f.fixtureDef);
             //may be null if a custom attach function is used

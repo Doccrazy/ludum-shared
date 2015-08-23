@@ -2,15 +2,19 @@ package de.doccrazy.shared.game.world;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-
-import box2dLight.RayHandler;
+import java.util.Set;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import box2dLight.RayHandler;
 import de.doccrazy.shared.game.actor.WorldActor;
 import de.doccrazy.shared.game.base.ActorContactListener;
 import de.doccrazy.shared.game.base.ActorListener;
@@ -74,7 +78,7 @@ public abstract class Box2dWorld extends EventSource {
 
         while (deltaCache >= PHYSICS_STEP) {
             stage.act(PHYSICS_STEP); // update game stage
-            box2dWorld.step(PHYSICS_STEP, 6, 3); // update box2d world
+            box2dWorld.step(PHYSICS_STEP, 8, 3); // update box2d world
             deltaCache -= PHYSICS_STEP;
         }
 
@@ -137,5 +141,48 @@ public abstract class Box2dWorld extends EventSource {
 
     public boolean isGameFinished() {
         return gameState == GameState.VICTORY || gameState == GameState.DEFEAT;
+    }
+
+    public Body bodyAt(Vector2 pos, float radius) {
+        return bodyAt(pos, radius, null);
+    }
+
+    public Body bodyAt(Vector2 pos, float radius, Body exclude) {
+        ClosestBodyQueryCallback cb = new ClosestBodyQueryCallback(pos, exclude);
+        box2dWorld.QueryAABB(cb, pos.x - radius*0.5f, pos.y - radius*0.5f, pos.x + radius*0.5f, pos.y + radius*0.5f);
+        return cb.body;
+    }
+
+    public Set<Body> allBodiesAt(Vector2 pos, float radius) {
+        final Set<Body> result = new HashSet<>();
+        box2dWorld.QueryAABB(new QueryCallback() {
+            @Override
+            public boolean reportFixture(Fixture fixture) {
+                result.add(fixture.getBody());
+                return true;
+            }
+        }, pos.x - radius*0.5f, pos.y - radius*0.5f, pos.x + radius*0.5f, pos.y + radius*0.5f);
+        return result;
+    }
+}
+
+class ClosestBodyQueryCallback implements QueryCallback {
+    Body body;
+    private Vector2 pos;
+    private Body exclude;
+
+    public ClosestBodyQueryCallback(Vector2 pos, Body exclude) {
+        this.pos = pos;
+        this.exclude = exclude;
+    }
+
+    @Override
+    public boolean reportFixture(Fixture fixture) {
+        if (!fixture.getBody().equals(exclude) &&
+                (body == null || fixture.getBody().getPosition().dst(pos) < body.getPosition().dst(pos))) {
+            body = fixture.getBody();
+        }
+
+        return true;
     }
 }
