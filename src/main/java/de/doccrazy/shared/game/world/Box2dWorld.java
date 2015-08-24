@@ -33,7 +33,7 @@ public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
     private int score;
 
     private GameState gameState = null;
-    private float stateTime;
+    private float stateTime, lastStateTime;
 
     public Box2dWorld(Vector2 gravity) {
         box2dWorld = new World(gravity, true);
@@ -63,6 +63,7 @@ public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
         stage.setKeyboardFocus(null);
         doTransition(newState);
         gameState = newState;
+        lastStateTime = stateTime;
         stateTime = 0;
     }
 
@@ -119,7 +120,7 @@ public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
         }
     }
 
-    protected void addScore(int value) {
+    public void addScore(int value) {
         score += value;
     }
 
@@ -129,6 +130,10 @@ public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
 
     public float getStateTime() {
         return stateTime;
+    }
+
+    public float getLastStateTime() {
+        return lastStateTime;
     }
 
     public GameState getGameState() {
