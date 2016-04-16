@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
@@ -40,8 +37,6 @@ public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
         box2dWorld.setContactListener(new ActorContactListener());
         stage = new Stage(); // create the game stage
         rayHandler = new RayHandler(box2dWorld);
-
-        transition(GameState.INIT);
     }
 
     public final void transition(GameState newState) {
@@ -75,6 +70,10 @@ public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
     }
 
     public final void update(float delta) {
+        if (gameState == null) {
+            transition(GameState.INIT);
+        }
+
         deltaCache += delta;
 
         while (deltaCache >= PHYSICS_STEP) {
@@ -153,7 +152,13 @@ public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
     }
 
     public Body bodyAt(Vector2 pos, float radius, Body exclude) {
-        ClosestBodyQueryCallback cb = new ClosestBodyQueryCallback(pos, exclude);
+        ClosestBodyQueryCallback cb = new ClosestBodyQueryCallback(pos, exclude, false);
+        box2dWorld.QueryAABB(cb, pos.x - radius*0.5f, pos.y - radius*0.5f, pos.x + radius*0.5f, pos.y + radius*0.5f);
+        return cb.body;
+    }
+
+    public Body staticBodyAt(Vector2 pos, float radius) {
+        ClosestBodyQueryCallback cb = new ClosestBodyQueryCallback(pos, null, true);
         box2dWorld.QueryAABB(cb, pos.x - radius*0.5f, pos.y - radius*0.5f, pos.x + radius*0.5f, pos.y + radius*0.5f);
         return cb.body;
     }
@@ -173,17 +178,21 @@ public abstract class Box2dWorld<T extends Box2dWorld<T>> extends EventSource {
 
 class ClosestBodyQueryCallback implements QueryCallback {
     Body body;
-    private Vector2 pos;
-    private Body exclude;
+    private final Vector2 pos;
+    private final Body exclude;
+    private final boolean onlyStatic;
 
-    public ClosestBodyQueryCallback(Vector2 pos, Body exclude) {
+    public ClosestBodyQueryCallback(Vector2 pos, Body exclude, boolean onlyStatic) {
         this.pos = pos;
         this.exclude = exclude;
+        this.onlyStatic = onlyStatic;
     }
 
     @Override
     public boolean reportFixture(Fixture fixture) {
         if (!fixture.getBody().equals(exclude) && !(fixture.getFilterData().maskBits == 0) &&
+                !(onlyStatic && fixture.getBody().getType() != BodyDef.BodyType.StaticBody) &&
+                !fixture.isSensor() &&
                 (body == null || fixture.getBody().getPosition().dst(pos) < body.getPosition().dst(pos))) {
             body = fixture.getBody();
         }

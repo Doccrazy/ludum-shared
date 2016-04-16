@@ -21,6 +21,7 @@ public abstract class SpriterActor<T extends Box2dWorld> extends ShapeActor<T> {
         player = new Player(entity);
         //1 pixel in Spriter <-> 1cm in world coordinates
         player.setScale(0.01f);
+        setUseRotation(false);
     }
 
     @Override
