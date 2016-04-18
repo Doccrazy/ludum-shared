@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.math.GeometryUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.Shape.Type;
 import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.utils.ShortArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PolyRenderer {
@@ -78,6 +80,50 @@ public class PolyRenderer {
 		ShortArray idx = triangulator.computeTriangles(vertTmp, 0, vertexCount*2);
 		shapeRenderer.draw(tex, vertParts, 0, vertexCount*5,
 				idx.items, 0, Math.max(0, vertexCount - 2) * 3);
+	}
+
+	/**
+	 * Triangulate the passed polygon and create Box2D shapes representing the object
+     */
+	public static List<PolygonShape> createPolyShape(List<Vector2> polyPoints) {
+		System.out.println("createPoly");
+
+		for (int i = 0; i < polyPoints.size(); i++) {
+			System.out.println(polyPoints.get(i));
+			vertTmp[i*2] = polyPoints.get(i).x;
+			vertTmp[i*2+1] = polyPoints.get(i).y;
+		}
+		ShortArray idx = triangulator.computeTriangles(vertTmp, 0, polyPoints.size()*2);
+		float[] tri = new float[6];
+		List<PolygonShape> result = new ArrayList<>();
+		for (int i = 0; i < idx.size/3; i++) {
+			tri[0] = polyPoints.get(idx.get(i*3)).x;
+			tri[1] = polyPoints.get(idx.get(i*3)).y;
+			tri[2] = polyPoints.get(idx.get(i*3+1)).x;
+			tri[3] = polyPoints.get(idx.get(i*3+1)).y;
+			tri[4] = polyPoints.get(idx.get(i*3+2)).x;
+			tri[5] = polyPoints.get(idx.get(i*3+2)).y;
+			System.out.println(String.format("tri %f %f %f %f %f %f", tri[0], tri[1], tri[2], tri[3], tri[4], tri[5]));
+			if ((Math.abs(tri[0] - tri[2]) < 0.001f && Math.abs(tri[1] - tri[3]) < 0.001f)
+					|| (Math.abs(tri[2] - tri[4]) < 0.001f && Math.abs(tri[3] - tri[5]) < 0.001f)
+					|| (Math.abs(tri[4] - tri[0]) < 0.001f && Math.abs(tri[5] - tri[1]) < 0.001f)) {
+                System.err.println("Polygon degenerate at index " + i);
+                continue;
+			}
+			if (!validTriangle(tri)) {
+                System.err.println("Invalid triangle (area to small) at index " + i);
+				continue;
+			}
+			PolygonShape polyShape = new PolygonShape();
+			polyShape.set(tri);
+			result.add(polyShape);
+		}
+		return result;
+	}
+
+	private static boolean validTriangle(float[] tri) {
+		float area = GeometryUtils.triangleArea(tri[0], tri[1], tri[2], tri[3], tri[4], tri[5]);
+		return area > 0.0001f;
 	}
 
 	static {

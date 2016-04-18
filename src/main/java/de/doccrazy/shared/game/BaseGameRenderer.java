@@ -30,6 +30,7 @@ public abstract class BaseGameRenderer<T extends Box2dWorld<T>> implements Actor
         // set the game stage viewport to the meters size
         world.stage.setViewport(new ExtendViewport(gameViewport.x, gameViewport.y));
         renderer = new Box2DDebugRenderer();
+        renderer.setDrawContacts(true);
 
         // we obtain a reference to the game stage camera. The camera is scaled to box2d meter units
         camera = (OrthographicCamera) world.stage.getCamera();
@@ -71,7 +72,7 @@ public abstract class BaseGameRenderer<T extends Box2dWorld<T>> implements Actor
             renderer.render(world.box2dWorld, camera.combined);
         }
 
-        world.rayHandler.setCombinedMatrix(camera.combined, 0, 0, gameViewport.x, gameViewport.y);
+        world.rayHandler.setCombinedMatrix(camera);
         world.rayHandler.updateAndRender();
     }
 
