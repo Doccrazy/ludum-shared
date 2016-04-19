@@ -33,6 +33,7 @@ dependencies {
     compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
     compile "net.dermetfan.libgdx-utils:libgdx-utils:$gdxUtilsVersion"
     compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:$gdxUtilsVersion"
+    compile 'org.apache.xmlgraphics:batik-parser:1.8'
     tools "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
     tools "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 }
