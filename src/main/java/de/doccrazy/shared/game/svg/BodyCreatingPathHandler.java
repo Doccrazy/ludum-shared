@@ -1,8 +1,6 @@
 package de.doccrazy.shared.game.svg;
 
 import com.badlogic.gdx.math.Bezier;
-import com.badlogic.gdx.math.EarClippingTriangulator;
-import com.badlogic.gdx.math.GeometryUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import de.doccrazy.shared.game.base.PolyRenderer;
@@ -16,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BodyCreatingPathHandler extends DefaultPathHandler {
+    //number of bezier subdivisions per unit of length
     private static final float SUBDIVS = 4f;
 
     private final AffineTransform transform;
@@ -134,14 +133,12 @@ public class BodyCreatingPathHandler extends DefaultPathHandler {
         Vector2 pEnd = transform(new Vector2(rel.x + x, rel.y + y));
         location.set(rel.x + x, rel.y + y);
 
-        float len = pEnd.dst(pStart) + pStart.dst(p1) + pEnd.dst(p2);
-        Vector2 tmp = new Vector2();
-        float sd = (int) (SUBDIVS * len);
+        Bezier<Vector2> bezier = new Bezier<>(pStart, p1, p2, pEnd);
+        float sd = Math.max((int) (SUBDIVS * bezier.approxLength(5)), 2);
         //System.out.println("subdivs " + sd);
         for (int i = 1; i <= sd; i++) {
             Vector2 out = new Vector2();
-            Bezier.cubic(out, i/sd, pStart, p1, p2, pEnd, tmp);
-            polyPoints.add(out);
+            polyPoints.add(bezier.valueAt(out, i/sd));
         }
     }
 
