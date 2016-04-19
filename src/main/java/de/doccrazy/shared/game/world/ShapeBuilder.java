@@ -43,6 +43,22 @@ public class ShapeBuilder {
         return new ShapeBuilder(s);
     }
 
+	public static ShapeBuilder poly(Vector2[] vertices) {
+		PolygonShape s = new PolygonShape();
+		s.set(vertices);
+		return new ShapeBuilder(s);
+	}
+
+	/**
+	 * Return polygon shape with coordinates relative to vertices[0]. Vertices will be modified!
+     */
+	public static ShapeBuilder polyRel(Vector2[] vertices) {
+		for (int i = vertices.length - 1; i >= 0; i--) {
+			vertices[i].sub(vertices[0]);
+		}
+		return poly(vertices);
+	}
+
 	public Shape build() {
 		return shape;
 	}
