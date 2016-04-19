@@ -3,6 +3,9 @@ package de.doccrazy.shared.game.svg;
 import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.sun.javafx.geom.FlatteningPathIterator;
+import com.sun.javafx.geom.Path2D;
+import com.sun.javafx.geom.transform.Identity;
 import de.doccrazy.shared.game.base.PolyRenderer;
 import de.doccrazy.shared.game.world.BodyBuilder;
 import org.apache.batik.parser.DefaultPathHandler;
@@ -151,8 +154,21 @@ public class BodyCreatingPathHandler extends DefaultPathHandler {
     @Override
     public void arcAbs(float rx, float ry, float xAxisRotation, boolean largeArcFlag, boolean sweepFlag, float x, float y) throws ParseException {
         System.out.println(String.format("arcAbs(%f, %f, %f, %b, %b, %f, %f)", rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y));
+
+        Path2D path = new Path2D();
+        path.moveTo(location.x, location.y);
+        path.arcTo(rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y);
+        FlatteningPathIterator iter = new FlatteningPathIterator(path.getPathIterator(new Identity()), 0.5f, 5);
+        iter.next();   //skip start point
+        float[] coords=new float[6];
+        while (!iter.isDone()) {
+            iter.currentSegment(coords);
+            polyPoints.add(transform(new Vector2(coords[0], coords[1])));
+            System.out.println("Arc " + polyPoints.get(polyPoints.size() - 1));
+            iter.next();
+        }
+
         location.set(x, y);
-        polyPoints.add(transform(location));
     }
 
     private Vector2 transform(Vector2 org) {
