@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.XmlReader;
 import de.doccrazy.shared.game.world.BodyBuilder;
 import de.doccrazy.shared.game.world.ShapeBuilder;
+import org.apache.batik.parser.AWTPathProducer;
 import org.apache.batik.parser.AWTTransformProducer;
 import org.apache.batik.parser.PathParser;
 import org.apache.batik.parser.TransformListParser;
@@ -125,13 +126,15 @@ public class SVGLayer {
         for (XmlReader.Element path : layerElement.getChildrenByName("path")) {
             AffineTransform pathTransform = createTransform(path);
             pathTransform.preConcatenate(transform);
-            BodyCreatingPathHandler handler = new BodyCreatingPathHandler(pathTransform);
-            parser.setPathHandler(handler);
 
+            AWTPathProducer handler = new AWTPathProducer();
+            parser.setPathHandler(handler);
             parser.parse(path.getAttribute("d"));
-            BodyBuilder builder = handler.getBodyBuilder();
-            applyPhysicsProps(path, builder);
-            bodyConsumer.accept(builder);
+
+            PathTriangulator.process(handler.getShape(), pathTransform, 0.01f, builder -> {
+                applyPhysicsProps(path, builder);
+                bodyConsumer.accept(builder);
+            });
         }
         for (XmlReader.Element rect : layerElement.getChildrenByName("rect")) {
             Vector2[] parsed = parseRectAsPoly(rect);
