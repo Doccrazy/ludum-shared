@@ -14,7 +14,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.XmlReader;
 import de.doccrazy.shared.game.base.BlurUtils;
+
+import java.io.IOException;
 
 public abstract class ResourcesBase {
     protected final TextureAtlas atlas;
@@ -59,6 +62,12 @@ public abstract class ResourcesBase {
     protected Texture textureWrap(String filename) {
         Texture tex = texture(filename);
         tex.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        return tex;
+    }
+
+    protected Texture textureFilterLinear(String filename) {
+        Texture tex = texture(filename);
         tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         return tex;
     }
@@ -152,4 +161,11 @@ public abstract class ResourcesBase {
         return new Animation(src.getFrameDuration(), newFrames, src.getPlayMode());
     }
 
+    protected XmlReader.Element xml(String filename) {
+        try {
+            return new XmlReader().parse(Gdx.files.internal(filename));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
