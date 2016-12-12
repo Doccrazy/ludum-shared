@@ -86,9 +86,4 @@ public abstract class ShapeActor<T extends Box2dWorld> extends Box2dActor<T> {
             setRotation(MathUtils.radiansToDegrees * body.getAngle());
         }
     }
-
-    protected void drawRegion(Batch batch, TextureRegion region) {
-        batch.draw(region, getX(), getY(), getOriginX(), getOriginY(),
-                getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
-    }
 }

@@ -1,5 +1,6 @@
 package de.doccrazy.shared.spriter;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,6 +11,7 @@ import com.brashmonkey.spriter.Timeline;
 public class GdxDrawer extends Drawer<Sprite> {
     private ShapeRenderer renderer;
     private Batch batch;
+    private Color color;
 
     public GdxDrawer(Loader<Sprite> loader) {
         super(loader);
@@ -49,13 +51,23 @@ public class GdxDrawer extends Drawer<Sprite> {
         sprite.setOrigin(newPivotX, newPivotY);
         sprite.setRotation(object.angle);
 
-        sprite.setColor(1f, 1f, 1f, object.alpha);
+        if (this.color !=  null) {
+            sprite.setColor(this.color.r, this.color.g, this.color.b, this.color.a * object.alpha);
+        } else {
+            sprite.setColor(1f, 1f, 1f, object.alpha);
+        }
         sprite.setScale(object.scale.x, object.scale.y);
         sprite.draw(batch);
     }
 
     public GdxDrawer withBatch(Batch batch) {
         this.batch = batch;
+        this.color = null;
+        return this;
+    }
+
+    public GdxDrawer color(Color color) {
+        this.color = color;
         return this;
     }
 }

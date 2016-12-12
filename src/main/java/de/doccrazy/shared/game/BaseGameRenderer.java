@@ -1,8 +1,14 @@
 package de.doccrazy.shared.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -14,12 +20,13 @@ import de.doccrazy.shared.game.world.Box2dWorld;
 public abstract class BaseGameRenderer<T extends Box2dWorld<T>> implements ActorListener<T> {
 	private static final float CAM_PPS = 5f;
 
-    private SpriteBatch batch = new SpriteBatch();
-    private Box2DDebugRenderer renderer;
+    private final SpriteBatch batch = new SpriteBatch();
+    private final FrameBuffer frameBuffer;
+    private final Box2DDebugRenderer renderer;
 
-    protected T world;
-    protected Vector2 gameViewport;
-    protected OrthographicCamera camera;
+    protected final T world;
+    protected final Vector2 gameViewport;
+    protected final OrthographicCamera camera;
     protected float zoom = 1;   //camera zoom
     protected boolean renderBox2dDebug;
 
@@ -36,6 +43,8 @@ public abstract class BaseGameRenderer<T extends Box2dWorld<T>> implements Actor
         camera = (OrthographicCamera) world.stage.getCamera();
 
         init();
+
+        frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
     }
 
     /**
@@ -59,6 +68,7 @@ public abstract class BaseGameRenderer<T extends Box2dWorld<T>> implements Actor
 
         camera.update();
 
+        frameBuffer.begin();
         batch.setProjectionMatrix(world.stage.getCamera().combined);
         batch.begin();
         drawBackground(batch);
@@ -71,9 +81,19 @@ public abstract class BaseGameRenderer<T extends Box2dWorld<T>> implements Actor
         if (renderBox2dDebug) {
             renderer.render(world.box2dWorld, camera.combined);
         }
+        frameBuffer.end();
+
+        batch.setProjectionMatrix(new Matrix4().idt());
+        batch.begin();
+        renderFramebufferToScreen(batch, frameBuffer);
+        batch.end();
 
         world.rayHandler.setCombinedMatrix(camera);
         world.rayHandler.updateAndRender();
+    }
+
+    protected void renderFramebufferToScreen(SpriteBatch batch, FrameBuffer frameBuffer) {
+        batch.draw(frameBuffer.getColorBufferTexture(), -1,1, 2, -2);
     }
 
     /**
@@ -96,5 +116,4 @@ public abstract class BaseGameRenderer<T extends Box2dWorld<T>> implements Actor
 	public void setRenderBox2dDebug(boolean renderBox2dDebug) {
         this.renderBox2dDebug = renderBox2dDebug;
     }
-
 }

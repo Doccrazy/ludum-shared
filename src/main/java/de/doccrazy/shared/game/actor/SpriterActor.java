@@ -51,7 +51,9 @@ public abstract class SpriterActor<T extends Box2dWorld> extends ShapeActor<T> {
     public void draw(Batch batch, float parentAlpha) {
         updatePosition();
         applyClientTransform(batch, true);
-        drawerProvider.get().withBatch(batch).draw(player);
+        //sometimes the first frame is not scaled and causes glitches
+        drawerProvider.get().withBatch(batch).color(getColor()).draw(player);
         resetTransform(batch);
+        drawActions(batch, parentAlpha);
     }
 }

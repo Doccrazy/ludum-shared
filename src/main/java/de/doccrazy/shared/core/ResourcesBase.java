@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import de.doccrazy.shared.game.base.BlurUtils;
@@ -167,5 +168,10 @@ public abstract class ResourcesBase {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected ShaderProgram shader(String vertexShaderFile, String fragmentShaderFile) {
+        return new ShaderProgram(Gdx.files.internal(vertexShaderFile).readString(),
+                Gdx.files.internal(fragmentShaderFile).readString());
     }
 }

@@ -1,8 +1,10 @@
 package de.doccrazy.shared.game.actor;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,6 +24,7 @@ public abstract class WorldActor<T extends Box2dWorld> extends Actor {
     private final Affine2 worldTransform = new Affine2();
     private final Matrix4 computedTransform = new Matrix4();
     private final Matrix4 oldTransform = new Matrix4();
+    private boolean didAct;
 
     public WorldActor(T world) {
         this.world = world;
@@ -49,6 +52,12 @@ public abstract class WorldActor<T extends Box2dWorld> extends Actor {
 
         task.update(delta);
         doAct(delta);
+        didAct = true;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return super.isVisible() && didAct;
     }
 
     protected abstract void doAct(float delta);
@@ -129,6 +138,19 @@ public abstract class WorldActor<T extends Box2dWorld> extends Actor {
         this.zOrder = zOrder;
         if (getStage() == world.stage) {
             world.refreshZOrder();
+        }
+    }
+
+    protected void drawRegion(Batch batch, TextureRegion region) {
+        batch.draw(region, getX(), getY(), getOriginX(), getOriginY(),
+                getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+    }
+
+    protected void drawActions(Batch batch, float parentAlpha) {
+        for (Action action : getActions()) {
+            if (action instanceof DrawingAction) {
+                ((DrawingAction) action).draw(batch, parentAlpha);
+            }
         }
     }
 }

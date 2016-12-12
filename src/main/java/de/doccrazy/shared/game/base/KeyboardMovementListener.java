@@ -12,19 +12,19 @@ public class KeyboardMovementListener extends InputListener implements MovementI
 
     @Override
 	public boolean keyDown(InputEvent event, int keycode) {
-		if (Keys.UP == keycode) {
+		if (Keys.UP == keycode || Keys.W == keycode) {
 			m1.y = 1;
 			return true;
 		}
-		if (Keys.DOWN == keycode) {
+		if (Keys.DOWN == keycode || Keys.S == keycode) {
 			m2.y = 1;
 			return true;
 		}
-		if (Keys.LEFT == keycode) {
+		if (Keys.LEFT == keycode || Keys.A == keycode) {
 			m2.x = 1;
 			return true;
 		}
-		if (Keys.RIGHT == keycode) {
+		if (Keys.RIGHT == keycode || Keys.D == keycode) {
 			m1.x = 1;
 			return true;
 		}
@@ -37,19 +37,19 @@ public class KeyboardMovementListener extends InputListener implements MovementI
 
 	@Override
 	public boolean keyUp(InputEvent event, int keycode) {
-		if (Keys.UP == keycode) {
+		if (Keys.UP == keycode || Keys.W == keycode) {
 			m1.y = 0;
 			return true;
 		}
-		if (Keys.DOWN == keycode) {
+		if (Keys.DOWN == keycode || Keys.S == keycode) {
 			m2.y = 0;
 			return true;
 		}
-		if (Keys.LEFT == keycode) {
+		if (Keys.LEFT == keycode || Keys.A == keycode) {
 			m2.x = 0;
 			return true;
 		}
-		if (Keys.RIGHT == keycode) {
+		if (Keys.RIGHT == keycode || Keys.D == keycode) {
 			m1.x = 0;
 			return true;
 		}

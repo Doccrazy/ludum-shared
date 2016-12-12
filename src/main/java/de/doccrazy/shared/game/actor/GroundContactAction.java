@@ -15,9 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
  */
 public class GroundContactAction extends Action {
     public static final float MAX_FLOOR_ANGLE = MathUtils.sinDeg(45);
-    public static final float MAX_WALL_ANGLE = MathUtils.cosDeg(30);
+    public static final float MAX_WALL_ANGLE = MathUtils.cosDeg(20);
     public static final float FLOOR_CONTACT_TTL = 0.2f;
-    public static final float WALL_CONTACT_TTL = 0.25f;
+    public static final float WALL_CONTACT_TTL = 0.10f;
 
     private World world;
     private float stateTime;

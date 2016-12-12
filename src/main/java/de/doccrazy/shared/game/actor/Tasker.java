@@ -14,7 +14,7 @@ public class Tasker {
     /**
      * Run action every x seconds
      */
-    public TaskDef every(float secs, Consumer<Void> action) {
+    public TaskDef every(float secs, Runnable action) {
         TaskDef def = new TaskDef(secs, action);
         newTasks.add(def);
         return def;
@@ -23,7 +23,7 @@ public class Tasker {
     /**
      * Run action once after x seconds
      */
-    public OnceTaskDef in(float secs, Consumer<Void> action) {
+    public OnceTaskDef in(float secs, Runnable action) {
         OnceTaskDef def = new OnceTaskDef(secs, action);
         newTasks.add(def);
         return def;
@@ -43,7 +43,7 @@ public class Tasker {
      * Do nothing for x seconds (for chaining)
      */
     public OnceTaskDef wait(float secs) {
-        return in(secs, Void -> {});
+        return in(secs, () -> {});
     }
 
     public void update(float delta) {
@@ -62,12 +62,12 @@ public class Tasker {
 
 
     public static class TaskDef {
-        Consumer<Void> function;
+        Runnable function;
         float time = 0f;
         float interval;
         boolean done;
 
-        TaskDef(float interval, Consumer<Void> function) {
+        TaskDef(float interval, Runnable function) {
             super();
             this.interval = interval;
             this.function = function;
@@ -90,7 +90,7 @@ public class Tasker {
 
         protected void exec() {
             if (function != null) {
-                function.accept(null);
+                function.run();
             }
         }
 
@@ -104,7 +104,7 @@ public class Tasker {
         private Consumer<Float> continuousFunc;
         boolean noDone;  //hack
 
-        OnceTaskDef(float interval, Consumer<Void> function) {
+        OnceTaskDef(float interval, Runnable function) {
             super(interval, function);
         }
 
@@ -141,15 +141,22 @@ public class Tasker {
         /**
          * After this finishes, run action every x seconds
          */
-        public TaskDef thenEvery(float secs, Consumer<Void> action) {
+        public TaskDef thenEvery(float secs, Runnable action) {
             follow = new TaskDef(secs, action);
             return follow;
         }
 
         /**
+         * After this finishes, run action once immediately
+         */
+        public OnceTaskDef then(Runnable action) {
+            return then(0, action);
+        }
+
+        /**
          * After this finishes, run action once after x seconds
          */
-        public OnceTaskDef then(float secs, Consumer<Void> action) {
+        public OnceTaskDef then(float secs, Runnable action) {
             follow = new OnceTaskDef(secs, action);
             return (OnceTaskDef)follow;
         }
@@ -167,7 +174,7 @@ public class Tasker {
          * After this finishes, do nothing for x seconds (for chaining)
          */
         public OnceTaskDef thenWait(float secs) {
-            return then(secs, Void -> {});
+            return then(secs, () -> {});
         }
     }
 }
